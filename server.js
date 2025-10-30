@@ -12,7 +12,7 @@ app.use(express.json());
 const PORT = process.env.PORT || 3000;
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
-// ✅ Serve a simple HTML page with a "Check Email Send" button
+// ✅ Serve a simple HTML page with "Check Email Send" button
 app.get("/", (req, res) => {
   res.send(`
     <!DOCTYPE html>
@@ -77,22 +77,23 @@ app.get("/", (req, res) => {
 app.post("/alert", async (req, res) => {
   try {
     const { latitude, longitude } = req.body;
+
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        Authorization: \`Bearer \${RESEND_API_KEY}\`,
+        Authorization: `Bearer ${RESEND_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         from: "GeoFence Alert <alert@geofence.app>",
         to: ["uk05065020524@gmail.com"],
         subject: "🚨 GeoFence Alert: User Outside Boundary!",
-        html: \`
+        html: `
           <h2>⚠️ User exited GeoFence area!</h2>
-          <p><b>Latitude:</b> \${latitude}</p>
-          <p><b>Longitude:</b> \${longitude}</p>
-          <p><a href="https://maps.google.com/?q=\${latitude},\${longitude}">View on Google Maps 🌍</a></p>
-        \`,
+          <p><b>Latitude:</b> ${latitude}</p>
+          <p><b>Longitude:</b> ${longitude}</p>
+          <p><a href="https://maps.google.com/?q=${latitude},${longitude}">View on Google Maps 🌍</a></p>
+        `,
       }),
     });
 
@@ -111,6 +112,6 @@ app.post("/alert", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(\`🚀 GeoFence backend (Resend) running on port \${PORT}\`);
+  console.log(`🚀 GeoFence backend (Resend) running on port ${PORT}`);
 });
 
