@@ -1,7 +1,7 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import fetch from "node-fetch";
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const fetch = require("node-fetch");
 
 dotenv.config();
 
@@ -12,7 +12,7 @@ app.use(express.json());
 const PORT = process.env.PORT || 3000;
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
-// ✅ Serve a simple HTML page with "Check Email Send" button
+// ✅ Test route (simple HTML page)
 app.get("/", (req, res) => {
   res.send(`
     <!DOCTYPE html>
@@ -45,7 +45,7 @@ app.get("/", (req, res) => {
       </style>
       <script>
         async function testEmailSend() {
-          const latitude = 28.6139;   // dummy coordinates
+          const latitude = 28.6139;
           const longitude = 77.2090;
 
           try {
@@ -84,17 +84,18 @@ app.post("/alert", async (req, res) => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
         "Content-Type": "application/json",
       },
-    body: JSON.stringify({
-  from: "GeoFence Alert <onboarding@resend.dev>", // ✅ verified default domain
-  to: ["uk05065020524@gmail.com"],
-  subject: "🚨 GeoFence Alert: User Outside Boundary!",
-  html: `
-    <h2>⚠️ User exited GeoFence area!</h2>
-    <p><b>Latitude:</b> ${latitude}</p>
-    <p><b>Longitude:</b> ${longitude}</p>
-    <p><a href="https://maps.google.com/?q=${latitude},${longitude}">View on Google Maps 🌍</a></p>
-  `,
-}),
+      body: JSON.stringify({
+        from: "GeoFence Alert <onboarding@resend.dev>", // ✅ safe verified sender
+        to: ["uk05065020524@gmail.com"],
+        subject: "🚨 GeoFence Alert: User Outside Boundary!",
+        html: `
+          <h2>⚠️ User exited GeoFence area!</h2>
+          <p><b>Latitude:</b> ${latitude}</p>
+          <p><b>Longitude:</b> ${longitude}</p>
+          <p><a href="https://maps.google.com/?q=${latitude},${longitude}">View on Google Maps 🌍</a></p>
+        `,
+      }),
+    });
 
     const data = await response.json();
     console.log("📧 Resend response:", data);
@@ -113,5 +114,4 @@ app.post("/alert", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 GeoFence backend (Resend) running on port ${PORT}`);
 });
-
 
